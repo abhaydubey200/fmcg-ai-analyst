@@ -1,24 +1,28 @@
 import pandas as pd
-import streamlit as st
 
+def load_file(uploaded_file):
+    """
+    Load CSV or Excel safely.
+    Handles missing openpyxl gracefully.
+    """
 
-def load_file(file):
-    filename = file.name.lower()
+    file_name = uploaded_file.name.lower()
 
-    # CSV is always safe
-    if filename.endswith(".csv"):
-        return pd.read_csv(file)
+    try:
+        if file_name.endswith(".csv"):
+            return pd.read_csv(uploaded_file)
 
-    # Excel is OPTIONAL
-    elif filename.endswith(".xlsx"):
-        try:
-            return pd.read_excel(file, engine="openpyxl")
-        except ImportError:
-            st.warning(
-                "⚠️ Excel support not available on server. "
-                "Please upload CSV instead."
-            )
-            raise RuntimeError("Excel dependency missing")
+        elif file_name.endswith((".xlsx", ".xls")):
+            try:
+                return pd.read_excel(uploaded_file, engine="openpyxl")
+            except ImportError:
+                raise ImportError(
+                    "Excel file detected but 'openpyxl' is not installed. "
+                    "Add openpyxl to requirements.txt or upload CSV."
+                )
 
-    else:
-        raise ValueError("Unsupported file format. Upload CSV or XLSX.")
+        else:
+            raise ValueError("Unsupported file format. Upload CSV or Excel.")
+
+    except Exception as e:
+        raise RuntimeError(f"File loading failed: {str(e)}")
