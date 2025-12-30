@@ -2,27 +2,33 @@ from src.ai_engine.gemini_client import ask_gemini
 
 def get_cleaning_rules(profile: dict) -> str:
     """
-    Generate AI-based cleaning rules safely.
+    AI-driven cleaning with deterministic fallback.
     """
 
     prompt = f"""
-    You are a data quality expert.
+    You are a senior data analyst.
 
-    Based on this dataset profile, suggest cleaning rules:
+    Dataset profile:
     {profile}
 
-    Keep it concise and practical.
+    Suggest:
+    - Missing value handling
+    - Data type fixes
+    - Outlier handling
+    - FMCG best practices
     """
 
-    rules = ask_gemini(prompt)
+    response = ask_gemini(prompt)
 
-    if "AI unavailable" in rules:
+    if response.startswith("AI unavailable"):
         return (
-            "Standard cleaning applied:\n"
-            "- Remove null values\n"
-            "- Fix data types\n"
-            "- Remove duplicates\n"
-            "- Standardize column names"
+            "Default Cleaning Rules Applied:\n"
+            "- Drop duplicate rows\n"
+            "- Fill numeric nulls with median\n"
+            "- Fill categorical nulls with mode\n"
+            "- Standardize column names\n"
+            "- Convert date-like columns to datetime\n"
+            "- Remove negative sales/quantity values"
         )
 
-    return rules
+    return response
