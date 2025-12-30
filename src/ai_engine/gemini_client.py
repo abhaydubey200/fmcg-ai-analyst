@@ -1,41 +1,23 @@
 import os
-import google.generativeai as genai
+import openai  # or the correct Gemini API client
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-def _get_valid_model():
-    """
-    Dynamically find a Gemini model that supports generateContent
-    """
-    try:
-        models = genai.list_models()
-        for m in models:
-            if "generateContent" in m.supported_generation_methods:
-                return m.name
-    except Exception:
-        pass
-    return None
-
+# Set your Gemini API key as environment variable
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Example using OpenAI client as placeholder
+openai.api_key = GEMINI_API_KEY
 
 def ask_gemini(prompt: str) -> str:
     """
-    Safe Gemini call.
-    ZERO crash guarantee.
+    Send dataset profile to Gemini API and get AI-driven insights.
     """
-
     try:
-        model_name = _get_valid_model()
-
-        if not model_name:
-            return "AI unavailable: No supported Gemini model found."
-
-        model = genai.GenerativeModel(model_name)
-        response = model.generate_content(prompt)
-
-        if not response or not hasattr(response, "text"):
-            return "AI returned empty response."
-
-        return response.text.strip()
-
+        # Placeholder: replace with correct Gemini API call
+        response = openai.Completion.create(
+            model="gpt-4",
+            prompt=prompt,
+            max_tokens=1000,
+            temperature=0.7
+        )
+        return response.choices[0].text.strip()
     except Exception as e:
-        return f"AI unavailable: {str(e)}"
+        return f"Error calling Gemini API: {str(e)}"
