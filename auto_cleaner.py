@@ -1,33 +1,28 @@
-import json
 from src.ai_engine.gemini_client import ask_gemini
 
+def get_cleaning_rules(profile: dict) -> str:
+    """
+    Generate AI-based cleaning rules safely.
+    """
 
-def get_cleaning_rules(profile: dict) -> dict:
     prompt = f"""
-You are a senior data quality engineer.
+    You are a data quality expert.
 
-Dataset profile:
-{profile}
+    Based on this dataset profile, suggest cleaning rules:
+    {profile}
 
-Suggest SAFE data cleaning rules.
+    Keep it concise and practical.
+    """
 
-Return STRICT JSON ONLY:
-{{
-  "missing_value_strategy": {{
-    "column_name": "mean | median | mode | drop"
-  }},
-  "remove_duplicates": true,
-  "date_standardization": ["date_column_name"]
-}}
-"""
-    response = ask_gemini(prompt)
+    rules = ask_gemini(prompt)
 
-    try:
-        return json.loads(response)
-    except Exception:
-        # Safe fallback (enterprise behavior)
-        return {
-            "missing_value_strategy": {},
-            "remove_duplicates": True,
-            "date_standardization": []
-        }
+    if "AI unavailable" in rules:
+        return (
+            "Standard cleaning applied:\n"
+            "- Remove null values\n"
+            "- Fix data types\n"
+            "- Remove duplicates\n"
+            "- Standardize column names"
+        )
+
+    return rules
