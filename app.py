@@ -14,7 +14,7 @@ if uploaded_file:
     if uploaded_file.name.endswith(".csv"):
         df = pd.read_csv(uploaded_file)
     else:
-        df = pd.read_excel(uploaded_file)
+        df = pd.read_excel(uploaded_file, engine='openpyxl')
 
     df = preprocess_data(df)
     st.success(f"File loaded successfully: {df.shape[0]} rows, {df.shape[1]} columns")
