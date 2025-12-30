@@ -1,22 +1,30 @@
 import json
 from src.ai_engine.gemini_client import ask_gemini
 
+
 def detect_charts_ai(df, kpis):
     prompt = f"""
-Select best charts for FMCG dashboard.
+You are an FMCG data visualization expert.
 
 Columns: {list(df.columns)}
 KPIs: {kpis}
 
-Return JSON:
+Select best charts.
+
+Return STRICT JSON:
 [
- {{
-  "chart_type":"bar",
-  "x_axis":"product",
-  "y_axis":"sales",
-  "title":"Sales by Product",
-  "business_reason":"Product performance"
- }}
+  {{
+    "chart_type": "bar | line",
+    "x_axis": "column_name",
+    "y_axis": "column_name",
+    "title": "Chart Title",
+    "business_reason": "Why this chart is useful"
+  }}
 ]
 """
-    return json.loads(ask_gemini(prompt))
+    response = ask_gemini(prompt)
+
+    try:
+        return json.loads(response)
+    except Exception:
+        return []
